@@ -15,29 +15,32 @@ export default function App() {
 
   const runSolution = async () => {
     if (!selectedProblem) return;
-    const solutionFn = problemRegistry[selectedProblem];
-
-    if (!solutionFn) {
-      setOutput('No solution found');
+  
+    const { tester } = problemRegistry[selectedProblem];
+  
+    if (!tester) {
+      setOutput('❌ No test cases available.');
       return;
     }
-
-    let result;
-    if (problemsRequiringInput.includes(selectedProblem)) {
-      // parse the input fields
-      const nums = arrayInput
-        .split(',')
-        .map(n => parseInt(n.trim(), 10))
-        .filter(n => !isNaN(n));
-      const target = parseInt(targetInput.trim(), 10);
-      result = await solutionFn(nums, target);
-    } else {
-      // problems that require no extra input
-      result = await solutionFn();
-    }
-
-    setOutput(JSON.stringify(result));
+  
+    const { allPassed, results } = tester();
+  
+    const summary = allPassed
+      ? '✅ All test cases passed!\n'
+      : `❌ Some test cases failed\n`;
+  
+    const details = results
+      .map(
+        (r) =>
+          `Test ${r.index}:\nInput: ${JSON.stringify(r.input)}\nExpected: ${JSON.stringify(
+            r.expected
+          )}\nActual: ${JSON.stringify(r.actual)}\nResult: ${r.passed ? '✅ Passed' : '❌ Failed'}\n`
+      )
+      .join('\n');
+  
+    setOutput(summary + details);
   };
+  
 
   return (
     <div
@@ -61,31 +64,6 @@ export default function App() {
               problems={Object.keys(problemRegistry)}
               onSelect={setSelectedProblem}
             />
-
-            {/* 👇 Conditionally render fields */}
-            {selectedProblem && problemsRequiringInput.includes(selectedProblem) && (
-              <Form className="mt-4">
-                <Form.Group className="mb-3">
-                  <Form.Label>Array (comma separated)</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="e.g. 2,7,11,15"
-                    value={arrayInput}
-                    onChange={(e) => setArrayInput(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Target</Form.Label>
-                  <Form.Control
-                    type="number"
-                    placeholder="e.g. 9"
-                    value={targetInput}
-                    onChange={(e) => setTargetInput(e.target.value)}
-                  />
-                </Form.Group>
-              </Form>
-            )}
 
             <div className="mt-4 d-grid">
               <Button variant="primary" size="lg" onClick={runSolution}>
