@@ -1,6 +1,6 @@
 # 💻 NeetCodeProblems — JavaScript Problem Runner
 
-This is a React-based project designed to run and view results of **NeetCode-style algorithm problems** interactively. It features a lightweight UI that allows you to select problems, automatically test them against curated test cases, and view pass/fail results directly on-screen.
+This is a React-based project designed to run and view results of **NeetCode-style algorithm problems** interactively. It features a lightweight UI that allows you to select problems, automatically test them against curated test cases, and view pass/fail results directly on-screen. Used to master data structures
 
 ---
 
